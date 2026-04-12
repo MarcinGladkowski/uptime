@@ -12,8 +12,8 @@ endpoints:
         send-on-resolved: true
         description: "bdtprojekt.pl is down"
 
-  - name: bdtprojektttt-pl
-    url: https://bdtprojektttt.pl
+  - name: bb-tech-com-pl
+    url: https://bb-tech.com.pl
     interval: 30s
     conditions:
       - "[STATUS] == 200"
@@ -23,4 +23,17 @@ endpoints:
         failure-threshold: 2
         success-threshold: 2
         send-on-resolved: true
-        description: "bdtprojektttt.pl is down (test endpoint)"
+        description: "bb-tech.com.pl is down"
+
+  - name: gladiatorgokartgames-com
+    url: https://gladiatorgokartgames.com
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 5000"
+    alerts:
+      - type: github
+        failure-threshold: 2
+        success-threshold: 2
+        send-on-resolved: true
+        description: "gladiatorgokartgames.com is down"
