@@ -28,27 +28,27 @@ jobs:
       - name: Fetch results from Gatus API
         id: results
         run: |
-          STATUS=$(curl -sf http://localhost:8080/api/v1/endpoints/statuses | \
-            jq -r '.[0].results[-1].success')
-          echo "success=${STATUS}" >> "$GITHUB_OUTPUT"
+          RESPONSE=$(curl -sf http://localhost:8080/api/v1/endpoints/statuses)
 
           echo "### Gatus Health Check Results" >> "$GITHUB_STEP_SUMMARY"
-          curl -sf http://localhost:8080/api/v1/endpoints/statuses | \
-            jq -r '
-              .[0] |
-              "**Endpoint:** \(.name)\n" +
-              "**Last check:** \(.results[-1].timestamp)\n" +
-              "**Status:** \(if .results[-1].success then "✅ UP" else "❌ DOWN" end)\n" +
-              "**Response time:** \(.results[-1].duration / 1000000)ms\n" +
-              "**HTTP status:** \(.results[-1].httpStatus)"
-            ' >> "$GITHUB_STEP_SUMMARY"
+          echo "$RESPONSE" | jq -r '
+            .[] |
+            "**Endpoint:** \(.name)  " +
+            "**Last check:** \(.results[-1].timestamp)  " +
+            "**Status:** \(if .results[-1].success then "✅ UP" else "❌ DOWN" end)  " +
+            "**Response time:** \(.results[-1].duration / 1000000)ms  " +
+            "**HTTP status:** \(.results[-1].httpStatus)"
+          ' >> "$GITHUB_STEP_SUMMARY"
+
+          ANY_DOWN=$(echo "$RESPONSE" | jq '[.[] | .results[-1].success] | any(. == false)')
+          echo "any_down=${ANY_DOWN}" >> "$GITHUB_OUTPUT"
 
       - name: Stop Gatus
         if: always()
         run: docker rm -f gatus || true
 
-      - name: Fail if site is down
-        if: steps.results.outputs.success == 'false'
+      - name: Fail if any site is down
+        if: steps.results.outputs.any_down == 'true'
         run: |
-          echo "::error::bdtprojekt.pl is DOWN!"
+          echo "::error::One or more monitored endpoints are DOWN!"
           exit 1

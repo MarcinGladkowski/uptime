@@ -11,3 +11,16 @@ endpoints:
         success-threshold: 2
         send-on-resolved: true
         description: "bdtprojekt.pl is down"
+
+  - name: bdtprojektttt-pl
+    url: https://bdtprojektttt.pl
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 5000"
+    alerts:
+      - type: github
+        failure-threshold: 2
+        success-threshold: 2
+        send-on-resolved: true
+        description: "bdtprojektttt.pl is down (test endpoint)"
