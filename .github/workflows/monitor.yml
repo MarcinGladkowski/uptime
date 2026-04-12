@@ -1,0 +1,54 @@
+name: Uptime Monitor
+
+on:
+  schedule:
+    - cron: '0 7-23 * * *'
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    name: Check bdtprojekt.pl
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Start Gatus
+        run: |
+          docker run -d \
+            --name gatus \
+            -v ${{ github.workspace }}/config:/config \
+            -p 8080:8080 \
+            twinproduction/gatus:latest
+
+      - name: Wait for initial health check
+        run: sleep 35
+
+      - name: Fetch results from Gatus API
+        id: results
+        run: |
+          STATUS=$(curl -sf http://localhost:8080/api/v1/endpoints/statuses | \
+            jq -r '.[0].results[-1].success')
+          echo "success=${STATUS}" >> "$GITHUB_OUTPUT"
+
+          echo "### Gatus Health Check Results" >> "$GITHUB_STEP_SUMMARY"
+          curl -sf http://localhost:8080/api/v1/endpoints/statuses | \
+            jq -r '
+              .[0] |
+              "**Endpoint:** \(.name)\n" +
+              "**Last check:** \(.results[-1].timestamp)\n" +
+              "**Status:** \(if .results[-1].success then "✅ UP" else "❌ DOWN" end)\n" +
+              "**Response time:** \(.results[-1].duration / 1000000)ms\n" +
+              "**HTTP status:** \(.results[-1].httpStatus)"
+            ' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Stop Gatus
+        if: always()
+        run: docker rm -f gatus || true
+
+      - name: Fail if site is down
+        if: steps.results.outputs.success == 'false'
+        run: |
+          echo "::error::bdtprojekt.pl is DOWN!"
+          exit 1
