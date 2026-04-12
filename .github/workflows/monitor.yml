@@ -7,7 +7,7 @@ on:
 
 jobs:
   monitor:
-    name: Check bdtprojekt.pl
+    name: Check projects
     runs-on: ubuntu-latest
 
     steps:
