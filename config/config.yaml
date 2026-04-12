@@ -27,6 +27,20 @@ endpoints:
         send-on-resolved: true
         description: "bb-tech.com.pl is down or certificate expiring soon"
 
+  - name: marcingladkowski-com
+    url: https://marcingladkowski.com
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 168h"
+    alerts:
+      - type: github
+        failure-threshold: 2
+        success-threshold: 2
+        send-on-resolved: true
+        description: "marcingladkowski.com is down or certificate expiring soon"
+
   - name: gladiatorgokartgames-pl
     url: https://gladiatorgokartgames.pl
     interval: 30s
