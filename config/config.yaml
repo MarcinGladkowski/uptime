@@ -5,12 +5,13 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 168h"
     alerts:
       - type: github
         failure-threshold: 2
         success-threshold: 2
         send-on-resolved: true
-        description: "bdtprojekt.pl is down"
+        description: "bdtprojekt.pl is down or certificate expiring soon"
 
   - name: bb-tech-com-pl
     url: https://bb-tech.com.pl
@@ -18,12 +19,13 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 168h"
     alerts:
       - type: github
         failure-threshold: 2
         success-threshold: 2
         send-on-resolved: true
-        description: "bb-tech.com.pl is down"
+        description: "bb-tech.com.pl is down or certificate expiring soon"
 
   - name: gladiatorgokartgames-pl
     url: https://gladiatorgokartgames.pl
@@ -31,9 +33,10 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
       - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 168h"
     alerts:
       - type: github
         failure-threshold: 2
         success-threshold: 2
         send-on-resolved: true
-        description: "gladiatorgokartgames.pl is down"
+        description: "gladiatorgokartgames.pl is down or certificate expiring soon"
