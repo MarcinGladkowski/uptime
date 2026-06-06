@@ -54,3 +54,17 @@ endpoints:
         success-threshold: 2
         send-on-resolved: true
         description: "gladiatorgokartgames.pl is down or certificate expiring soon"
+
+  - name: szymonpoloczek-pl
+    url: https://szymonpoloczek.pl
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 5000"
+      - "[CERTIFICATE_EXPIRATION] > 168h"
+    alerts:
+      - type: github
+        failure-threshold: 2
+        success-threshold: 2
+        send-on-resolved: true
+        description: "szymonpoloczek.pl is down or certificate expiring soon"
